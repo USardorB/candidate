@@ -9,7 +9,7 @@ function parseODataDate(value) {
 // Formats a date for the screen as DD.MM.YYYY (UTC).
 function formatDate(date) {
   const day = String(date.getUTCDate()).padStart(2, '0');
-  const month = String(date.getUTCMonth()).padStart(2, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
   const year = date.getUTCFullYear();
   return `${day}.${month}.${year}`;
 }
@@ -22,12 +22,13 @@ function normalizeEquipmentId(id) {
 
 // Returns the list of operations of an order.
 function getOperations(order) {
-  return order.Operations.results;
+  return order.Operations?.results || [];
 }
 
 // Total planned hours of all operations of an order.
+// PlannedHours comes from OData as a string ("2.5"), so it must be converted to a number.
 function totalPlannedHours(order) {
-  return getOperations(order).reduce((sum, op) => sum + op.PlannedHours, 0);
+  return getOperations(order).reduce((sum, op) => sum + Number(op.PlannedHours || 0), 0);
 }
 
 module.exports = {
